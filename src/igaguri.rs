@@ -2,6 +2,7 @@ use ast::{Input, Ast};
 use std::io::{self, ErrorKind};
 use std::process::{Command, Child, Stdio};
 use std::os::unix::io::{FromRawFd, IntoRawFd};
+use std::fs::File;
 use read::Reader;
 
 
@@ -49,12 +50,21 @@ impl Igaguri {
 
     fn run(&mut self, ast: Ast, stdin: Stdio, stdout: Stdio, stderr: Stdio) -> io::Result<Child> {
         match ast {
-            Ast::Command(mut terms) => {
+            Ast::Command{cmd: mut terms, out} => {
                 debug!("{:?}", terms);
                 if terms.len() < 1 {
                     return Err(io::Error::new(ErrorKind::InvalidInput, "input is not a command"));
                 }
                 let cmd = terms.drain(0..1).next().unwrap();
+                let stdout = out.map(|f| {
+                    unsafe {
+                        let file = File::create(f)
+                        // FIXME: do not panic
+                            .unwrap();
+                        Stdio::from_raw_fd(file.into_raw_fd())
+                    }
+
+                }).unwrap_or(stdout);
                 Command::new(cmd)
                     .args(&terms)
                     .stdin(stdin)

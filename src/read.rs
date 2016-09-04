@@ -10,10 +10,15 @@ pub struct Reader {
 }
 
 
-named!(token< String >, map!(map_res!(is_a!("abcdefghijklmnopqlrstuvwxyzABCDEFGHIJKLMNOPQLRSTUVWXYZ-!$%^&@/1234567890"), str::from_utf8), |i: &str| i.to_string()));
+named!(token<String>, map!(map_res!(is_a!("abcdefghijklmnopqlrstuvwxyzABCDEFGHIJKLMNOPQLRSTUVWXYZ-!$%^&@/1234567890"), str::from_utf8), |i: &str| i.to_string()));
 named!(pipe, tag!("|"));
+named!(redirect_out<String>, chain!(tag!(">") ~ opt!(multispace) ~ filename: token, || filename));
 
-named!(command<Ast>, chain!(opt!(multispace) ~ cmd: separated_list!(multispace, token) ~ opt!(multispace), || Ast::Command(cmd)));
+named!(command<Ast>, chain!(
+    opt!(multispace)
+        ~ cmd: separated_list!(multispace, token)
+        ~ outfile: opt!(chain!(multispace ~ out: redirect_out, || out))
+        ~ opt!(multispace), || Ast::Command{cmd: cmd, out: outfile}));
 named!(parse<Ast>, map!(separated_list!(pipe, command), Ast::Pipe));
 
 
@@ -44,7 +49,10 @@ impl Reader {
                             error!("Error: {:?}", e);
                             return Err("parse failed".to_string());
                         }
-                        IResult::Incomplete(_) => continue,
+                        IResult::Incomplete(_) => {
+                            debug!("reading next line");
+                            continue
+                        },
                     }
                 }
                 Err(ReadlineError::Interrupted) => {

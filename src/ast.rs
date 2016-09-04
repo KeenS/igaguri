@@ -8,7 +8,7 @@ pub enum Input {
 
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub enum Ast {
-    Command(Vec<String>),
+    Command{cmd: Vec<String>, out: Option<String>},
     Pipe(Vec<Ast>),
 }
 
@@ -16,7 +16,7 @@ impl Ast {
     pub fn is_empty(&self) -> bool {
         use self::Ast::*;
         match self {
-            &Command(ref vec) => vec.is_empty(),
+            &Command{cmd: ref cmd, ..} => cmd.is_empty(),
             &Pipe(ref vec) => vec.is_empty(),
         }
     }
