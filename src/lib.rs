@@ -4,6 +4,6 @@ extern crate nom;
 extern crate log;
 extern crate rustyline;
 
-pub mod parse;
+pub mod read;
 pub mod ast;
 pub mod igaguri;

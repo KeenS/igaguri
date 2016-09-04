@@ -2,7 +2,7 @@ use ast::{Input, Ast};
 use std::io::{self, ErrorKind};
 use std::process::{Command, Child, Stdio};
 use std::os::unix::io::{FromRawFd, IntoRawFd};
-use parse::Reader;
+use read::Reader;
 
 
 pub struct Igaguri {

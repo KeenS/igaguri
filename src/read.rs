@@ -11,9 +11,9 @@ pub struct Reader {
 
 
 named!(token< String >, map!(map_res!(is_a!("abcdefghijklmnopqlrstuvwxyzABCDEFGHIJKLMNOPQLRSTUVWXYZ-!$%^&@/1234567890"), str::from_utf8), |i: &str| i.to_string()));
+named!(pipe, tag!("|"));
 
-named!(pipe, chain!(opt!(multispace) ~ tag!("|") ~ opt!(multispace), || b"|"));
-named!(command<Ast>, map!(separated_list!(multispace, token), Ast::Command));
+named!(command<Ast>, chain!(opt!(multispace) ~ cmd: separated_list!(multispace, token) ~ opt!(multispace), || Ast::Command(cmd)));
 named!(parse<Ast>, map!(separated_list!(pipe, command), Ast::Pipe));
 
 
