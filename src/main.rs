@@ -1,7 +1,5 @@
 extern crate igaguri;
 
-use igaguri::parse::Reader;
-use igaguri::ast::{Input, Ast};
 use igaguri::igaguri::Igaguri;
 
 fn main() {

@@ -1,13 +1,12 @@
 use ast::{Input, Ast};
-use nom::{multispace, Err, IResult};
+use nom::{multispace, IResult};
 use std::str;
 use rustyline::Editor;
 use rustyline::error::ReadlineError;
-use std::io;
 
 pub struct Reader {
     rl: Editor<()>,
-    histfile: String
+    histfile: String,
 }
 
 
@@ -40,22 +39,22 @@ impl Reader {
                         IResult::Done(_, ast) => {
                             println!("Line: {}", input);
                             return Ok(Input::Input(ast));
-                        },
+                        }
                         IResult::Error(e) => {
                             println!("Error: {:?}", e);
                             return Err("parse failed".to_string());
-                        },
+                        }
                         IResult::Incomplete(_) => continue,
                     }
-                },
+                }
                 Err(ReadlineError::Interrupted) => {
                     println!("CTRL-C");
                     return Ok(Input::Interupt);
-                },
+                }
                 Err(ReadlineError::Eof) => {
                     println!("CTRL-D");
                     return Ok(Input::Eof);
-                },
+                }
                 Err(err) => {
                     println!("Error: {:?}", err);
                     return Err("IO error".to_string());
@@ -65,6 +64,6 @@ impl Reader {
     }
 
     pub fn save_history(&self) -> Result<(), String> {
-        self.rl.save_history(& self.histfile).map_err(|_| "failed to save the history".to_string())
+        self.rl.save_history(&self.histfile).map_err(|_| "failed to save the history".to_string())
     }
 }
