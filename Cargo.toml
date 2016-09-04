@@ -4,5 +4,7 @@ name = "igaguri"
 version = "0.1.0"
 
 [dependencies]
+env_logger = "0.3.4"
+log = "0.3.6"
 nom = "1.2.4"
 rustyline = "1.0.0"

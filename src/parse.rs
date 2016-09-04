@@ -37,26 +37,26 @@ impl Reader {
                     buffer = buffer + &input;
                     match parse(&buffer.as_bytes()) {
                         IResult::Done(_, ast) => {
-                            println!("Line: {}", input);
+                            debug!("Line: {}", input);
                             return Ok(Input::Input(ast));
                         }
                         IResult::Error(e) => {
-                            println!("Error: {:?}", e);
+                            error!("Error: {:?}", e);
                             return Err("parse failed".to_string());
                         }
                         IResult::Incomplete(_) => continue,
                     }
                 }
                 Err(ReadlineError::Interrupted) => {
-                    println!("CTRL-C");
+                    debug!("CTRL-C");
                     return Ok(Input::Interupt);
                 }
                 Err(ReadlineError::Eof) => {
-                    println!("CTRL-D");
+                    debug!("CTRL-D");
                     return Ok(Input::Eof);
                 }
                 Err(err) => {
-                    println!("Error: {:?}", err);
+                    error!("Error: {:?}", err);
                     return Err("IO error".to_string());
                 }
             }

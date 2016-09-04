@@ -19,27 +19,27 @@ impl Igaguri {
             let readline = self.reader.readline();
             match readline {
                 Ok(Input::Input(ast)) => {
-                    println!("Line: {:?}", ast);
+                    debug!("Line: {:?}", ast);
                     if !ast.is_empty() {
                         match self.run(ast, Stdio::inherit(), Stdio::inherit(), Stdio::inherit()) {
                             Ok(mut child) => {
                                 child.wait();
                             }
                             Err(e) => {
-                                println!("{}", e);
+                                debug!("{}", e);
                             }
                         }
                     }
                 }
                 Ok(Input::Interupt) => {
-                    println!("C-c");
+                    debug!("C-c");
                 }
                 Ok(Input::Eof) => {
-                    println!("eof");
+                    debug!("eof");
                     break;
                 }
                 Err(s) => {
-                    println!("{}", s);
+                    error!("{}", s);
                 }
             }
         }
@@ -50,7 +50,7 @@ impl Igaguri {
     fn run(&mut self, ast: Ast, stdin: Stdio, stdout: Stdio, stderr: Stdio) -> io::Result<Child> {
         match ast {
             Ast::Command(mut terms) => {
-                println!("{:?}", terms);
+                debug!("{:?}", terms);
                 if terms.len() < 1 {
                     return Err(io::Error::new(ErrorKind::InvalidInput, "input is not a command"));
                 }
@@ -63,7 +63,7 @@ impl Igaguri {
                     .spawn()
             }
             Ast::Pipe(commands) => {
-                println!("{:?}", commands);
+                debug!("{:?}", commands);
                 let mut si = stdin;
                 let mut itr = commands.into_iter().peekable();
                 unsafe {
